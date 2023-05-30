@@ -1,0 +1,68 @@
+Timer unit: 1e-06 s
+
+Total time: 9.5685 s
+File: cryptoquip_solver.py
+Function: solve at line 45
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    45                                           @profile
+    46                                           def solve(mapping):
+    47                                           
+    48                                               # every now and then print the status``
+    49      1153        565.0      0.5      0.0      if PRINT_ALL_STEPS or random.randint(0, 10000) == 1:
+    50      1153      65305.0     56.6      0.7          print(mapping)
+    51                                                   # print_solved(mapping)
+    52                                           
+    53      1153        849.0      0.7      0.0      if SLOW_STEPS:
+    54                                                   input()
+    55                                           
+    56      1153      58548.0     50.8      0.6      shortest_word, chosen_letter, unchosen_letters_left = get_shortest(mapping)
+    57                                               # print(get_shortest(mapping))
+    58      1153       7152.0      6.2      0.1      chosen_values = set(mapping.values())
+    59                                           
+    60      1153        956.0      0.8      0.0      if shortest_word is None:
+    61                                                   valid_solutions.add(solution(mapping))
+    62                                                   return True, mapping
+    63                                           
+    64      1153        546.0      0.5      0.0      shortest_pattern = ""
+    65      5550       4013.0      0.7      0.0      for l in shortest_word:
+    66      4391       2566.0      0.6      0.0          if l in mapping:
+    67      4391       3213.0      0.7      0.0              shortest_pattern += mapping[l]
+    68                                                   else:
+    69                                                       # shortest_pattern += "[^%s]" % "".join(chosen_values)
+    70      1159        755.0      0.7      0.0              shortest_pattern += "."
+    71                                           
+    72      1153        655.0      0.6      0.0      shortest_pattern += ""
+    73                                           
+    74                                               # print(shortest_pattern)
+    75      1153      25610.0     22.2      0.3      pat = re.compile(shortest_pattern.lower())
+    76                                           
+    77      1153       1521.0      1.3      0.0      valid_words = [w for w in words_by_length[len(
+    78      1152    9287930.0   8062.4     97.1          shortest_word)] if pat.match(w)]
+    79                                               # print(valid_words)
+    80                                           
+    81      1152       1487.0      1.3      0.0      for chosen_word in valid_words:
+    82      1152       3763.0      3.3      0.0          new_mapping = mapping.copy()
+    83                                           
+    84      3590       9037.0      2.5      0.1          for i in range(len(chosen_word)):
+    85      3590       6241.0      1.7      0.1              new_mapping[shortest_word[i]] = chosen_word[i].upper()
+    86                                           
+    87                                               # for l in letters:
+    88                                               #     if l in chosen_values:
+    89                                               #         continue
+    90                                               #     new_mapping = mapping.copy()
+    91                                               #     new_mapping[chosen_letter] = l
+    92                                           
+    93      1152      80023.0     69.5      0.8          if not check_word(new_mapping, shortest_word) or not check_puzzle(new_mapping):
+    94                                                       continue
+    95                                           
+    96      1152       6056.0      5.3      0.1          success, correct_chosen = solve(new_mapping)
+    97      1146        922.0      0.8      0.0          if success:
+    98                                                       valid_solutions.add(solution(correct_chosen))
+    99                                           
+   100                                                       if not FIND_ALL_SOLUTIONS:
+   101                                                           return True, correct_chosen
+   102                                           
+   103      1146        783.0      0.7      0.0      return False, None
+
