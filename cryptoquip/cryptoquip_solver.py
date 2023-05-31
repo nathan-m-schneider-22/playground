@@ -69,6 +69,7 @@ st = time.time()
 
 
 # pull a mapping from the priority queue
+@profile
 def solve():
     global mapping_priority_queue
     val = mapping_priority_queue.get()
@@ -97,7 +98,7 @@ def solve():
     # get all the possible words that the "best word" could be (given the mapping)
     valid_words = get_valid_words(best_word, mapping)
 
-    for chosen_word in valid_words:
+    for chosen_word in valid_words:  # choose a word, generate a next mapping from it
         new_mapping = mapping.copy()
 
         for i in range(len(chosen_word)):
@@ -171,6 +172,10 @@ def get_plain_word(cipher_word, mapping):
 # check that a mapping will map a cipher word to an english word
 def check_word(mapping, cipher_word: string):
     plain_word = get_plain_word(cipher_word, mapping)
+
+    if len(set([l for l in cipher_word])) != len(set([l for l in plain_word])):
+        return False
+
     if len(cipher_word) <= 2:
         return plain_word.lower() in short_words
 
