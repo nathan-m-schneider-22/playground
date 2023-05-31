@@ -6,7 +6,8 @@ import time
 import re
 from queue import PriorityQueue
 import sys
-#local imports
+
+# local imports
 from puzzle_generator import generate_cryptoquip_dict
 from line_profiler import LineProfiler
 from collections import defaultdict
@@ -43,17 +44,16 @@ t = time.time()
 for length in words_by_length.keys():
     if len(words_by_length[length]) != 0:
         sub_words = words_by_length[length]
-        words_by_position[length] = {} 
+        words_by_position[length] = {}
         sub_dict = words_by_position[length]
         for i in range(len(sub_words[0])):
             sub_dict[i] = {}
-        for word in sub_words: 
+        for word in sub_words:
             for i in range(length):
                 if word[i].upper() not in sub_dict[i].keys():
                     sub_dict[i][word[i].upper()] = {word}
                 else:
                     sub_dict[i][word[i].upper()].add(word)
-print('pre-processing cost: {}'.format(time.time()-t))
 
 # to get all words matching _T__, you would call
 # super_word_map[length][position][letter]
@@ -70,11 +70,10 @@ if len(sys.argv) > 1:
     puzzles_dict = generate_cryptoquip_dict(filename, seed=10)
 
 
-
 # remove special characters
 # puzzle = re.sub(r"[^A-Za-a ]", " ", open(filename).read()).strip()
 # puzzle = [p.strip() for p in puzzle.split(" ") if p.strip() != ""]
-puzzle = puzzles_dict['encrypted_puzzles'][0]
+puzzle = puzzles_dict["encrypted_puzzles"][0]
 print(puzzle)
 
 
@@ -100,6 +99,7 @@ PRINT_EVERY_ONE_IN = 1000
 mapping_priority_queue = PriorityQueue()
 mapping_priority_queue.put((0, json.dumps(letter_mapping)))
 
+print("pre-processing cost: {}".format(time.time() - t))
 
 # start the timer
 st = time.time()
@@ -187,6 +187,7 @@ def get_valid_words(cipher_word, mapping):
 
     return valid_words
 
+
 def get_valid_words_no_regex(cipher_word, mapping):
     chosen_values = set(mapping.values())
 
@@ -196,7 +197,7 @@ def get_valid_words_no_regex(cipher_word, mapping):
         l = cipher_word[pos]
         if l in mapping:
             set_list.append(words_by_position[length][pos][mapping[l]])
-    
+
     if set_list == []:
         return words_by_length[length]
     else:
@@ -204,7 +205,6 @@ def get_valid_words_no_regex(cipher_word, mapping):
         for subset in set_list:
             total_set = subset & total_set
         return total_set
-
 
 
 # calculate a priority score for a new letter mapping
@@ -218,11 +218,15 @@ def calc_score(mapping):
             score += 1 / frequencies[plain_word.lower()] * 1000
             num += 1
 
+    return score * (2**-num)
     return -num + score
 
 
 # check all completed words from a mapping for validity
 def is_puzzle_valid(mapping):
+    if len(mapping.keys()) != len(set(mapping.values())):
+        return False
+
     for cipher_word in puzzle:
         if all([l in mapping for l in cipher_word]):
             if check_word(mapping, cipher_word) == False:
