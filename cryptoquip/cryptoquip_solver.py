@@ -8,6 +8,18 @@ from queue import PriorityQueue
 import sys
 #local imports
 from puzzle_generator import generate_cryptoquip_dict
+from line_profiler import LineProfiler
+
+profiler = LineProfiler()
+
+
+def profile(func):
+    def inner(*args, **kwargs):
+        profiler.add_function(func)
+        profiler.enable_by_count()
+        return func(*args, **kwargs)
+
+    return inner
 
 
 letters = [l for l in string.ascii_uppercase]
