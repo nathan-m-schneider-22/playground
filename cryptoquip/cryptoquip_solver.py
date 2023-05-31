@@ -9,6 +9,7 @@ import sys
 #local imports
 from puzzle_generator import generate_cryptoquip_dict
 from line_profiler import LineProfiler
+from collections import defaultdict
 
 profiler = LineProfiler()
 
@@ -54,6 +55,15 @@ for length in words_by_length.keys():
                     sub_dict[i][word[i].upper()].add(word)
 print('pre-processing cost: {}'.format(time.time()-t))
 
+# to get all words matching _T__, you would call
+# super_word_map[length][position][letter]
+# super_word_map[4][1]["T"]
+super_word_map = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+for length in range(len(words_by_length)):
+    for word in words_by_length[length]:
+        for p in range(len(word)):
+            letter = word[p].upper()
+            super_word_map[length][p][letter].append(word)
 filename = "raw_puzzles.txt"
 if len(sys.argv) > 1:
     filename = sys.argv[1]
@@ -150,9 +160,14 @@ def get_valid_words(cipher_word, mapping):
     chosen_values = set(mapping.values())
 
     word_pattern = ""
-    for l in cipher_word:
+    known_letter = None
+    known_position = -1
+    for i in range(len(cipher_word)):
+        l = cipher_word[i]
         if l in mapping:
             word_pattern += mapping[l]
+            known_letter = mapping[l]
+            known_position = i
         else:
             if len(chosen_values) == 0:
                 word_pattern = "."
@@ -160,8 +175,14 @@ def get_valid_words(cipher_word, mapping):
                 word_pattern += "[^%s]" % "".join(chosen_values)
     word_pattern += ""
 
+    if known_letter == None:
+        possible_words = words_by_length[len(cipher_word)]
+
+    else:
+        possible_words = super_word_map[len(cipher_word)][known_position][known_letter]
+
     pat = re.compile(word_pattern.lower())
-    same_length_words = words_by_length[len(cipher_word)]
+    same_length_words = possible_words
     valid_words = [w for w in same_length_words if pat.match(w)]
 
     return valid_words
