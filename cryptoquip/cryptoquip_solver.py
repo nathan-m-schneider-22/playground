@@ -8,8 +8,6 @@ from queue import PriorityQueue
 import sys
 
 
-mappings = PriorityQueue()
-
 letters = [l for l in string.ascii_uppercase]
 
 short_words = set(open("short_words.txt").read().split("\n"))
@@ -21,11 +19,9 @@ for i in range(len(frq)):
     frequencies[frq[i][0]] = int(frq[i][1])
 
 words = open("ordered_words.txt").read().split("\n")
-
 words_by_length = {
     i: [w for w in words if len(w) == i] for i in range(len(max(words, key=len)))
 }
-
 words = set(words)
 
 
@@ -51,107 +47,132 @@ letter_mapping = {}
 
 valid_solutions = set()
 
+WAIT_BETWEEN_STEPS = False
 FIND_ALL_SOLUTIONS = True
 PRINT_ALL_STEPS = False
-SLOW_STEPS = False
+PRINT_EVERY_ONE_IN = 1000
 
 
-mappings.put((0, json.dumps(letter_mapping)))
+# priority queue with format (priority , str(letter mapping))
+mapping_priority_queue = PriorityQueue()
+mapping_priority_queue.put((0, json.dumps(letter_mapping)))
 
+
+# start the timer
 st = time.time()
 
 
+# pull a mapping from the priority queue
 def solve():
-    global mappings
-    val = mappings.get()
+    global mapping_priority_queue
+    val = mapping_priority_queue.get()
     score = val[0]
     mapping = json.loads(val[1])
 
-    if PRINT_ALL_STEPS or random.randint(0, 1000) == 1:
+    # every now and then, print the current attempt
+    if PRINT_ALL_STEPS or random.randint(0, PRINT_EVERY_ONE_IN) == 1:
         print(score, mapping)
-        print_solved(mapping)
+        print(solution_string(mapping))
 
-    if SLOW_STEPS:
+    if WAIT_BETWEEN_STEPS:
         input()
 
-    shortest_word, chosen_letter, unchosen_letters_left = get_shortest(mapping)
-    chosen_values = set(mapping.values())
+    best_word = get_best_word(mapping)
 
-    if shortest_word is None:
+    if best_word is None:
         print(time.time() - st)
-        print_solved(mapping)
-        valid_solutions.add(solution(mapping))
+        print(solution_string(mapping))
+        valid_solutions.add(solution_string(mapping))
 
         if not FIND_ALL_SOLUTIONS:
-            mappings = PriorityQueue()
-
+            mapping_priority_queue = PriorityQueue()
         return
 
-    shortest_pattern = ""
-    for l in shortest_word:
-        if l in mapping:
-            shortest_pattern += mapping[l]
-        else:
-            if len(chosen_values) == 0:
-                shortest_pattern = "."
-            else:
-                shortest_pattern += "[^%s]" % "".join(chosen_values)
-
-    shortest_pattern += ""
-
-    pat = re.compile(shortest_pattern.lower())
-
-    valid_words = [w for w in words_by_length[len(shortest_word)] if pat.match(w)]
+    # get all the possible words that the "best word" could be (given the mapping)
+    valid_words = get_valid_words(best_word, mapping)
 
     for chosen_word in valid_words:
         new_mapping = mapping.copy()
 
         for i in range(len(chosen_word)):
-            new_mapping[shortest_word[i]] = chosen_word[i].upper()
+            new_mapping[best_word[i]] = chosen_word[i].upper()
 
-        if not check_word(new_mapping, shortest_word) or not check_puzzle(new_mapping):
-            return
-
-        mappings.put((getscore(new_mapping), json.dumps(new_mapping)))
+        # check if the mapping gives a valid word, and doesn't make the puzzle gibberish
+        if check_word(new_mapping, best_word) and is_puzzle_valid(new_mapping):
+            mapping_priority_queue.put(
+                (
+                    calc_score(new_mapping),
+                    json.dumps(new_mapping),
+                )
+            )  # calc the score and put it in the queue
 
     return
 
 
-def getscore(mapping):
+# for a cipher word and mapping, return all english words that could match that (ordered by frequency)
+def get_valid_words(cipher_word, mapping):
+    chosen_values = set(mapping.values())
+
+    word_pattern = ""
+    for l in cipher_word:
+        if l in mapping:
+            word_pattern += mapping[l]
+        else:
+            if len(chosen_values) == 0:
+                word_pattern = "."
+            else:
+                word_pattern += "[^%s]" % "".join(chosen_values)
+    word_pattern += ""
+
+    pat = re.compile(word_pattern.lower())
+    same_length_words = words_by_length[len(cipher_word)]
+    valid_words = [w for w in same_length_words if pat.match(w)]
+
+    return valid_words
+
+
+# calculate a priority score for a new letter mapping
+def calc_score(mapping):
     score = 0
     num = 0
-    for word in puzzle:
-        if all([l in mapping for l in word]):
-            newWord = ""
-            for l in word:
-                newWord += mapping[l]
-            score += 1 / frequencies[newWord.lower()] * 1000
+    for cipher_word in puzzle:
+        if all([l in mapping for l in cipher_word]):
+            plain_word = get_plain_word(cipher_word, mapping)
+
+            score += 1 / frequencies[plain_word.lower()] * 1000
             num += 1
 
     return -num + score
 
 
-def check_puzzle(mapping):
-    for word in puzzle:
-        if all([l in mapping for l in word]):
-            if check_word(mapping, word) == False:
+# check all completed words from a mapping for validity
+def is_puzzle_valid(mapping):
+    for cipher_word in puzzle:
+        if all([l in mapping for l in cipher_word]):
+            if check_word(mapping, cipher_word) == False:
                 return False
     return True
 
 
-def check_word(mapping, word: string):
+# convert a cipher word to a plain word using a letter mapping
+def get_plain_word(cipher_word, mapping):
     newWord = ""
-    for l in word:
+    for l in cipher_word:
         newWord += mapping[l]
-
-    d = newWord.lower() in short_words
-    if len(word) <= 2:
-        return newWord.lower() in short_words
-
-    return newWord.lower() in words
+    return newWord
 
 
-def solution(mapping):
+# check that a mapping will map a cipher word to an english word
+def check_word(mapping, cipher_word: string):
+    plain_word = get_plain_word(cipher_word, mapping)
+    if len(cipher_word) <= 2:
+        return plain_word.lower() in short_words
+
+    return plain_word.lower() in words
+
+
+# print the current solution, excluding incomplete words
+def solution_string(mapping):
     solved = ""
 
     for word in puzzle:
@@ -168,40 +189,30 @@ def solution(mapping):
     return solved
 
 
-def print_solved(mapping):
-    print(solution(mapping))
-
-
-def get_shortest(mapping):
+# find the word with the fewest letters in already in the mapping, to reduce possible words it could be
+def get_best_word(mapping):
     lowest_num_unchosen = 10000
-    shortest_word = None
-    first_unchosen_letter = ""
-    left_unchosen = 10000
+    best_word = None
 
     for word in puzzle:
         unchosen = 0
-        unchosen_letter = ""
         for l in word:
             if not l in mapping:
                 unchosen += 1
-                if unchosen_letter == "":
-                    unchosen_letter = l
 
         if unchosen < lowest_num_unchosen and unchosen != 0:
             lowest_num_unchosen = unchosen
-            shortest_word = word
-            left_unchosen = unchosen
-            first_unchosen_letter = unchosen_letter
+            best_word = word
 
-    return shortest_word, first_unchosen_letter, left_unchosen
+    return best_word
 
 
-while not mappings.empty():
+# solve it lol
+while not mapping_priority_queue.empty():
     solve()
 
-if len(valid_solutions) > 0:
-    for sol in valid_solutions:
-        print(sol)
+for sol in valid_solutions:
+    print(sol)
 
 print("Number of solutions found: ", len(valid_solutions))
 print("Finished in ", time.time() - st, "seconds")
