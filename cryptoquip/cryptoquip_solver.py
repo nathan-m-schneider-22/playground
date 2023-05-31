@@ -6,6 +6,8 @@ import time
 import re
 from queue import PriorityQueue
 import sys
+#local imports
+from puzzle_generator import generate_cryptoquip_dict
 
 
 letters = [l for l in string.ascii_uppercase]
@@ -28,10 +30,14 @@ words = set(words)
 filename = "puzzle.txt"
 if len(sys.argv) > 1:
     filename = sys.argv[1]
+    puzzles_dict = generate_cryptoquip_dict(filename, seed=10)
+
+
 
 # remove special characters
-puzzle = re.sub(r"[^A-Za-a ]", " ", open(filename).read()).strip()
-puzzle = [p.strip() for p in puzzle.split(" ") if p.strip() != ""]
+# puzzle = re.sub(r"[^A-Za-a ]", " ", open(filename).read()).strip()
+# puzzle = [p.strip() for p in puzzle.split(" ") if p.strip() != ""]
+puzzle = puzzles_dict['encrypted_puzzles'][0]
 print(puzzle)
 
 
