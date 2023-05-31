@@ -37,9 +37,24 @@ words_by_length = {
     i: [w for w in words if len(w) == i] for i in range(len(max(words, key=len)))
 }
 words = set(words)
+words_by_position = {}
+t = time.time()
+for length in words_by_length.keys():
+    if len(words_by_length[length]) != 0:
+        sub_words = words_by_length[length]
+        words_by_position[length] = {} 
+        sub_dict = words_by_position[length]
+        for i in range(len(sub_words[0])):
+            sub_dict[i] = {}
+        for word in sub_words: 
+            for i in range(length):
+                if word[i].upper() not in sub_dict[i].keys():
+                    sub_dict[i][word[i].upper()] = {word}
+                else:
+                    sub_dict[i][word[i].upper()].add(word)
+print('pre-processing cost: {}'.format(time.time()-t))
 
-
-filename = "puzzle.txt"
+filename = "raw_puzzles.txt"
 if len(sys.argv) > 1:
     filename = sys.argv[1]
     puzzles_dict = generate_cryptoquip_dict(filename, seed=10)
@@ -66,7 +81,7 @@ letter_mapping = {}
 valid_solutions = set()
 
 WAIT_BETWEEN_STEPS = False
-FIND_ALL_SOLUTIONS = True
+FIND_ALL_SOLUTIONS = False
 PRINT_ALL_STEPS = False
 PRINT_EVERY_ONE_IN = 1000
 
@@ -108,7 +123,9 @@ def solve():
         return
 
     # get all the possible words that the "best word" could be (given the mapping)
-    valid_words = get_valid_words(best_word, mapping)
+
+    # valid_words = get_valid_words(best_word, mapping)
+    valid_words = get_valid_words_no_regex(best_word, mapping)
 
     for chosen_word in valid_words:  # choose a word, generate a next mapping from it
         new_mapping = mapping.copy()
@@ -148,6 +165,25 @@ def get_valid_words(cipher_word, mapping):
     valid_words = [w for w in same_length_words if pat.match(w)]
 
     return valid_words
+
+def get_valid_words_no_regex(cipher_word, mapping):
+    chosen_values = set(mapping.values())
+
+    set_list = []
+    length = len(cipher_word)
+    for pos in range(length):
+        l = cipher_word[pos]
+        if l in mapping:
+            set_list.append(words_by_position[length][pos][mapping[l]])
+    
+    if set_list == []:
+        return words_by_length[length]
+    else:
+        total_set = set_list[0]
+        for subset in set_list:
+            total_set = subset & total_set
+        return total_set
+
 
 
 # calculate a priority score for a new letter mapping
