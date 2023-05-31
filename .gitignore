@@ -33,3 +33,6 @@ tic-tac-toe/
 tpu/
 valentine/
 wordle/
+
+__pycache__
+env
