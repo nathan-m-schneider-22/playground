@@ -38,6 +38,9 @@ words = open("ordered_words.txt").read().split("\n")
 words_by_length = {
     i: [w for w in words if len(w) == i] for i in range(len(max(words, key=len)))
 }
+words_by_length[1] = [w for w in short_words if len(w) == 1]
+words_by_length[2] = [w for w in short_words if len(w) == 2]
+
 words = set(words)
 words_by_position = {}
 t = time.time()
