@@ -33,6 +33,9 @@ tic-tac-toe/
 tpu/
 valentine/
 wordle/
+public/
+data-visualization/
+*/.vscode
 
 __pycache__
 env
