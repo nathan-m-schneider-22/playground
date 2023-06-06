@@ -9,5 +9,5 @@ Check out the READMEs in each subdirectory to see more!
 Cryptoquip is another simple word game, popular in newspapers. In it players must crack a simple mono-alphabetic substitution solver to decipher a secret phrase. I made a solver for these types of puzzles, inspired by Dijkstra's Algorithm. 
 
 
-# [Cryptoquip solver](valorant-data/README.md)
+# [Valorant data analysis](valorant-data/README.md)
 Valorant is a tactical shooter game. I pulled match data from an API to analyze strategies across multiple skill levels. 
