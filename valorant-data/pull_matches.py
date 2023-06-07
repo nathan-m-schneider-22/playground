@@ -24,7 +24,8 @@ def main():
         seen_players.append(str((player,tag)))
 
         data = get_data(player,tag)
-
+        if data == None: continue
+        
         with open("players/%s#%s.json" % (player,tag), "w") as outfile:
             outfile.write(json.dumps(data))
 
@@ -57,7 +58,7 @@ def get_players(data):
 
 def get_data(player, tag):
 
-    while True:
+    for _ in range(3):
         
         try:
             url = "https://api.henrikdev.xyz/valorant/v3/matches/na/%s/%s?filter=competitive"
@@ -65,8 +66,10 @@ def get_data(player, tag):
 
             data = r.json()['data']
             return data
-        except Exception as E:
-            print(E)
+        except Exception as Err:
+            print(r.json)
+            print(Err)
+            time.sleep(10)
 
 
 
