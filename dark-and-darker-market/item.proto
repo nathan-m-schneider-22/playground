@@ -1,0 +1,38 @@
+syntax = "proto3";
+package item;
+
+message Listing {
+
+    int32 listingId = 1;
+    Item item = 2;
+    int32 price = 3;
+    int32 timeToExpire =4;
+    Seller seller =5;
+}
+
+message Seller {
+    string accountId = 1;
+    string classInfo = 2;
+    optional int32 unknown = 3;
+    optional string rank = 4;
+}
+
+message Item { 
+    
+    uint64 itemUniqueId = 1;
+    string itemId = 2;
+    repeated ItemProperty propertyArray = 9;
+    int32 unknown1 =3;
+    int32 unknown2 =4;
+    int32 unknown3 =5;
+    int32 unknown4 =11;
+}
+
+message ItemProperty {
+    string property = 1;
+    int32 value = 2;
+}
+
+message MarketResponse {
+    repeated Listing listingArray = 1;
+}
