@@ -1,5 +1,7 @@
 syntax = "proto3";
-package item;
+package darkanddarker;
+
+import "player.proto";
 
 message Listing {
 
@@ -7,22 +9,17 @@ message Listing {
     Item item = 2;
     int32 price = 3;
     int32 timeToExpire =4;
-    Seller seller =5;
+    Player seller =5;
 }
 
-message Seller {
-    string accountId = 1;
-    string classInfo = 2;
-    optional int32 unknown = 3;
-    optional string rank = 4;
-}
 
 message Item { 
     
     uint64 itemUniqueId = 1;
     string itemId = 2;
-    repeated ItemProperty propertyArray = 9;
-    int32 unknown1 =3;
+    repeated ItemProperty primaryPropertyArray = 9;
+    repeated ItemProperty secondaryPropertyArray = 10;
+    int32 itemCount =3;
     int32 unknown2 =4;
     int32 unknown3 =5;
     int32 unknown4 =11;
@@ -35,4 +32,14 @@ message ItemProperty {
 
 message MarketResponse {
     repeated Listing listingArray = 1;
+}
+
+
+message MarketListingRequest {
+    repeated QueryProperty queryField = 1;
+}
+
+message QueryProperty {
+    int32 vaue = 1;
+    repeated string key = 2;
 }

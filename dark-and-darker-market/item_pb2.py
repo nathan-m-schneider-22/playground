@@ -11,23 +11,26 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+import player_pb2 as player__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nitem.proto\x12\x04item\"y\n\x07Listing\x12\x11\n\tlistingId\x18\x01 \x01(\x05\x12\x18\n\x04item\x18\x02 \x01(\x0b\x32\n.item.Item\x12\r\n\x05price\x18\x03 \x01(\x05\x12\x14\n\x0ctimeToExpire\x18\x04 \x01(\x05\x12\x1c\n\x06seller\x18\x05 \x01(\x0b\x32\x0c.item.Seller\"l\n\x06Seller\x12\x11\n\taccountId\x18\x01 \x01(\t\x12\x11\n\tclassInfo\x18\x02 \x01(\t\x12\x14\n\x07unknown\x18\x03 \x01(\x05H\x00\x88\x01\x01\x12\x11\n\x04rank\x18\x04 \x01(\tH\x01\x88\x01\x01\x42\n\n\x08_unknownB\x07\n\x05_rank\"\x9f\x01\n\x04Item\x12\x14\n\x0citemUniqueId\x18\x01 \x01(\x04\x12\x0e\n\x06itemId\x18\x02 \x01(\t\x12)\n\rpropertyArray\x18\t \x03(\x0b\x32\x12.item.ItemProperty\x12\x10\n\x08unknown1\x18\x03 \x01(\x05\x12\x10\n\x08unknown2\x18\x04 \x01(\x05\x12\x10\n\x08unknown3\x18\x05 \x01(\x05\x12\x10\n\x08unknown4\x18\x0b \x01(\x05\"/\n\x0cItemProperty\x12\x10\n\x08property\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05\"5\n\x0eMarketResponse\x12#\n\x0clistingArray\x18\x01 \x03(\x0b\x32\r.item.Listingb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nitem.proto\x12\rdarkanddarker\x1a\x0cplayer.proto\"\x8b\x01\n\x07Listing\x12\x11\n\tlistingId\x18\x01 \x01(\x05\x12!\n\x04item\x18\x02 \x01(\x0b\x32\x13.darkanddarker.Item\x12\r\n\x05price\x18\x03 \x01(\x05\x12\x14\n\x0ctimeToExpire\x18\x04 \x01(\x05\x12%\n\x06seller\x18\x05 \x01(\x0b\x32\x15.darkanddarker.Player\"\xed\x01\n\x04Item\x12\x14\n\x0citemUniqueId\x18\x01 \x01(\x04\x12\x0e\n\x06itemId\x18\x02 \x01(\t\x12\x39\n\x14primaryPropertyArray\x18\t \x03(\x0b\x32\x1b.darkanddarker.ItemProperty\x12;\n\x16secondaryPropertyArray\x18\n \x03(\x0b\x32\x1b.darkanddarker.ItemProperty\x12\x11\n\titemCount\x18\x03 \x01(\x05\x12\x10\n\x08unknown2\x18\x04 \x01(\x05\x12\x10\n\x08unknown3\x18\x05 \x01(\x05\x12\x10\n\x08unknown4\x18\x0b \x01(\x05\"/\n\x0cItemProperty\x12\x10\n\x08property\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05\">\n\x0eMarketResponse\x12,\n\x0clistingArray\x18\x01 \x03(\x0b\x32\x16.darkanddarker.Listing\"H\n\x14MarketListingRequest\x12\x30\n\nqueryField\x18\x01 \x03(\x0b\x32\x1c.darkanddarker.QueryProperty\"*\n\rQueryProperty\x12\x0c\n\x04vaue\x18\x01 \x01(\x05\x12\x0b\n\x03key\x18\x02 \x03(\tb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'item_pb2', globals())
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _LISTING._serialized_start=20
-  _LISTING._serialized_end=141
-  _SELLER._serialized_start=143
-  _SELLER._serialized_end=251
-  _ITEM._serialized_start=254
-  _ITEM._serialized_end=413
-  _ITEMPROPERTY._serialized_start=415
-  _ITEMPROPERTY._serialized_end=462
-  _MARKETRESPONSE._serialized_start=464
-  _MARKETRESPONSE._serialized_end=517
+  _LISTING._serialized_start=44
+  _LISTING._serialized_end=183
+  _ITEM._serialized_start=186
+  _ITEM._serialized_end=423
+  _ITEMPROPERTY._serialized_start=425
+  _ITEMPROPERTY._serialized_end=472
+  _MARKETRESPONSE._serialized_start=474
+  _MARKETRESPONSE._serialized_end=536
+  _MARKETLISTINGREQUEST._serialized_start=538
+  _MARKETLISTINGREQUEST._serialized_end=610
+  _QUERYPROPERTY._serialized_start=612
+  _QUERYPROPERTY._serialized_end=654
 # @@protoc_insertion_point(module_scope)

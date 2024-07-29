@@ -1,0 +1,11 @@
+syntax = "proto3";
+package darkanddarker;
+
+
+
+message Player {
+    string accountId = 1;
+    string classInfo = 2;
+    optional int32 unknown = 3;
+    optional string rank = 4;
+}
